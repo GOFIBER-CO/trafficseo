@@ -1,0 +1,153 @@
+.container {
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.post-button {
+  cursor: pointer;
+}
+
+.input-container {
+  border-bottom-width: 1px;
+  border-color: #d1d5db;
+}
+
+.avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.date-completed {
+  width: 100% !important;
+  border-color: white;
+}
+
+.post-input {
+  display: flex;
+  padding-left: 1rem;
+  background-color: #f3f4f6;
+  color: #6b7280;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  flex: 1 1 0%;
+  justify-content: flex-start;
+  align-items: center;
+  border-radius: 9999px;
+  cursor: pointer;
+}
+
+.not-allowed {
+  cursor: not-allowed !important;
+}
+
+.action-button {
+  display: grid;
+  color: #6b7280;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  cursor: pointer;
+}
+
+.action-button:hover {
+  background-color: #e5e7eb;
+}
+
+.post-action {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  border-width: 1px;
+  border-right-width: 0;
+  border-left-width: 0;
+  border-color: #e5e7eb;
+}
+
+.post-action-button {
+  display: flex;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  margin-left: 0.5rem;
+  color: #6b7280;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  justify-content: center;
+  align-items: center;
+  width: 33.333333%;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.post-action-button:hover {
+  background-color: #f3f4f6;
+}
+
+.post-info {
+  color: #6b7280;
+}
+
+.comment-input {
+  display: flex;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  background-color: #f3f4f6;
+  flex: 1 1 0%;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 9999px;
+}
+
+.comment-input input {
+  background-color: transparent;
+  flex: 1 1 0%;
+  outline: 0;
+  border: none;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: center;
+}
+
+.post-content-input {
+  outline: none;
+  background: #fff;
+  resize: none;
+  border: none;
+}
+
+.post-quantity-input {
+  padding: 10px 0px;
+  outline: none;
+  background: #fff;
+  resize: none;
+  border: none;
+  border-top: 1px solid #dee2e6;
+  width: 100%;
+}
+
+.post-content-input:focus {
+  outline: none;
+}
+
+.post-quantity-input:focus {
+  outline: none;
+}
+
+
+.container-comments {
+  max-height: 320px;
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.container-repeat-post {
+  padding: 5px;
+  background-color: white;
+  border-radius: 5px;
+  margin-top: 5px;
+}

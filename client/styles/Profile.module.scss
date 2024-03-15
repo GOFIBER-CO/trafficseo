@@ -1,0 +1,49 @@
+.menu-dropdown {
+  position: relative;
+}
+
+.container {
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.tab-container {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.active {
+  border-bottom: 2px solid cornflowerblue;
+}
+
+.post-content-input {
+  outline: none;
+  background: #fff;
+  resize: none;
+  border: none;
+}
+
+.payment-header {
+  flex: 1;
+}
+
+.profile-item-select {
+  background-color: #87D3F8;
+  border-radius: 20px;
+  color: white !important;
+  font-weight: 500;
+}
+
+.profile-item:hover {
+  color: green !important
+}
+
+.total-money {
+  border: green 2px solid;
+  padding: 10px;
+  display: flex
+}
