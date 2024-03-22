@@ -930,3 +930,9 @@ export const createPermission = (data) => api.create(`${urlPermission}`, data);
 export const deletePermission = (id) => api.delete(`${urlPermission}/${id}`);
 export const editPermission = (id, data) =>
   api.update(`${urlPermission}/${id}`, data);
+
+// info payment
+export const getInfoPaymentByUserId = async (userId) => {
+  const res = await api.get(`api/v1/infoPayment/get-by-user-id/${userId}`);
+  return res.data;
+};

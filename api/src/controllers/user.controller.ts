@@ -202,16 +202,20 @@ export async function login2Fa(req, res) {
 }
 import ipLoginAdminModel from '../models/ipLoginAdmin.model';
 import accountMaxIpModel from '../models/accountMaxIp.model';
+import infoPaymentModel from '../models/infoPayment.model';
 
 class UserController {
   async login(req: Request, res: Response, next: NextFunction) {
     try {
-        const blackListIp=["222.255.171.121","2401:d800:decd:ad63:67d4:376e:d99e:19b","2402:9d80:26f:bd4c:ec8d:f9a6:d99e:511d"]
+      const blackListIp = [
+        '222.255.171.121',
+        '2401:d800:decd:ad63:67d4:376e:d99e:19b',
+        '2402:9d80:26f:bd4c:ec8d:f9a6:d99e:511d',
+      ];
       const ip = req.headers['x-forwarded-for']?.split(',') || [];
-        if(blackListIp?.includes(ip?.[0]))
-        {
-            throw new Error("IP Black List");
-        }
+      if (blackListIp?.includes(ip?.[0])) {
+        throw new Error('IP Black List');
+      }
       const schema = Joi.object({
         password: Joi.string().required().max(32).min(6).messages({
           'string.empty': 'Mật khẩu không được để trống',
@@ -224,7 +228,7 @@ class UserController {
           'string.max': 'Email tối đa là 32 chữ',
         }),
       });
-    
+
       const validate = schema.validate(req.body);
 
       if (validate.error) {
@@ -236,8 +240,10 @@ class UserController {
         .populate('roleOfUser')
         .populate('team')
         .lean();
-  
- if (
+
+      console.log(req.body, checkExist);
+
+      if (
         (checkExist?.roleOfUser?.name === 'btv' ||
           checkExist?.roleOfUser?.name === 'user') &&
         req.get('origin') === 'https://admin.trafficseo.online'
@@ -265,7 +271,7 @@ class UserController {
           message: 'Tài khoản của bạn không được duyệt!',
         });
       const ipAcceptLoginAdmin = await ipLoginAdminModel.findOne();
-  
+
       if (
         checkExist?.roleOfUser?.name === 'superAdmin' &&
         ip?.[0] !== ipAcceptLoginAdmin?.ip &&
@@ -345,9 +351,10 @@ class UserController {
         ip: req.headers['x-forwarded-for'] || '::1',
         user: checkExist._id,
       });
-      sendLog(`Người dùng đang nhập \n${JSON.stringify(checkExist)}`);
+      // sendLog(`Người dùng đang nhập \n${JSON.stringify(checkExist)}`);
       return res.status(200).json(response);
     } catch (error) {
+      console.log(error);
       next(error);
     }
   }
@@ -411,7 +418,7 @@ class UserController {
       }
       return res.json({});
     } catch (error) {
-    //   console.log(error);
+      //   console.log(error);
     }
   }
   async changePassword(req: AuthRequest, res: Response, next: NextFunction) {
@@ -492,9 +499,9 @@ class UserController {
         telegram: Joi.string(),
         telegramId: Joi.string(),
       });
-        // console.log(req.headers['x-forwarded-for'])
+      // console.log(req.headers['x-forwarded-for'])
       const validate = schema.validate(req.body);
-    
+
       if (validate.error) {
         throw new Error(validate.error.message);
       }
@@ -561,7 +568,7 @@ class UserController {
         const { id, given_name, family_name, link, picture, name, email } =
           userData.data;
         //  const { email_verified, email, name, picture } = verifyToken.data;
-   
+
         const findRole: any = await roleModel.findOne({ name: 'user' });
         const checkValidEmail = await userModel.findOne({ email: email });
 
@@ -850,6 +857,7 @@ class UserController {
         throw new Error('Không tìm thấy người dùng');
       }
       const bodyLog = { ...req.body };
+
       if (bodyLog?.password && bodyLog?.password !== '') {
         const salt = genSaltSync(Number(process.env.SALT_ROUND || 10));
         const hash = hashSync(bodyLog.password, salt);
@@ -867,6 +875,31 @@ class UserController {
         req.params.id,
         bodyLog
       );
+
+      // add bank
+      const { bank, fullName, stk } = req.body;
+
+      if (bank && fullName && stk) {
+        const infoPayment = await infoPaymentModel.findOne({
+          user: req.params.id,
+        });
+
+        await infoPaymentModel.findByIdAndUpdate(
+          infoPayment?._id || new mongoose.Types.ObjectId(),
+          {
+            $set: {
+              user: req.params.id,
+              bank,
+              fullName,
+              stk,
+            },
+          },
+          {
+            upsert: true,
+          }
+        );
+      }
+
       const response = {
         message: 'Cập nhật thành công',
         status: RESPONSE_STATUS.SUCCESS,
@@ -1063,7 +1096,7 @@ class UserController {
           };
         }
       }
-    //   console.log(condition);
+      //   console.log(condition);
       const [commissionDetail, commissionTotal] = await Promise.all([
         userModel.aggregate([
           {
@@ -1452,4 +1485,3 @@ class UserController {
 }
 
 export default new UserController();
-

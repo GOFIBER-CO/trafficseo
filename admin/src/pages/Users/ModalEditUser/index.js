@@ -11,8 +11,14 @@ import {
   Upload,
 } from "antd";
 import { useEffect, useState } from "react";
-import { editUser, getAllRole, getPagingTeam } from "../../../helpers/helper";
+import {
+  editUser,
+  getAllRole,
+  getInfoPaymentByUserId,
+  getPagingTeam,
+} from "../../../helpers/helper";
 import { toast } from "react-toastify";
+import { banks } from "../../../common/banks";
 const ListAccept = [
   { label: "Đang chờ duyệt", value: 0 },
   { label: "Đã duyệt", value: 1 },
@@ -27,6 +33,7 @@ const ModalEditUser = ({ record, getData }) => {
   const [team, setTeam] = useState();
   const [roleList, setRoleList] = useState([]);
   const [teams, setTeams] = useState([]);
+  const [bank, setBank] = useState();
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -48,6 +55,16 @@ const ModalEditUser = ({ record, getData }) => {
     setTeams(res?.data);
   };
 
+  const getInfoPayment = async (userId) => {
+    try {
+      const result = await getInfoPaymentByUserId(userId);
+      form.setFieldsValue(result);
+      setBank(result?.bank || "");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     if (isModalOpen) {
       handleGetRoleList();
@@ -57,11 +74,19 @@ const ModalEditUser = ({ record, getData }) => {
       const listTeam = record?.team?.map((item) => item?._id);
       setTeam(listTeam);
       getTeams();
+      getInfoPayment(record?._id);
+    } else {
+      form.setFieldValue({
+        fullName: "",
+        stk: "",
+      });
+      setBank("");
     }
   }, [record, isModalOpen]);
   const handleUpdateUser = (value) => {
     value.roleOfUser = role;
     value.team = team;
+    value.bank = bank;
     editUser(record?._id, value)
       .then(() => {
         getData();
@@ -181,6 +206,65 @@ const ModalEditUser = ({ record, getData }) => {
                 <Input placeholder="Nhập ip cho phép đăng nhập" />
               </Form.Item>
             </Col>
+
+            <Col md={12}>
+              <Form.Item label="Ngân hàng">
+                <Select
+                  value={bank}
+                  allowClear
+                  placeholder="Chọn ngân hàng"
+                  onChange={(e) => {
+                    setBank(e);
+                    if (!e) {
+                      form.setFieldValue("stk", "");
+                      form.setFieldValue("fullName", "");
+                    }
+                  }}
+                  style={{ width: "100%" }}
+                  options={banks?.map((item) => ({
+                    value: item?.shortName,
+                    label: item?.shortName + " - " + item?.name,
+                  }))}
+                />
+              </Form.Item>
+            </Col>
+
+            <Col md={12}>
+              <Form.Item label="Số tài khoản" name="stk">
+                <Input disabled={!bank} />
+              </Form.Item>
+            </Col>
+
+            <Col md={12}>
+              <Form.Item label="Tên chủ thẻ" name="fullName">
+                <Input disabled={!bank} />
+              </Form.Item>
+            </Col>
+
+            <Col md={12}>
+              <Form.Item>
+                <Upload
+                  name="avatar"
+                  listType="picture-circle"
+                  className="avatar-uploader"
+                  beforeUpload={() => false}
+                  previewFile={true}
+                  disabled
+                >
+                  {imageUrl && (
+                    <img
+                      src={imageUrl}
+                      alt="avatar"
+                      style={{
+                        width: "200px",
+                        height: "200px",
+                      }}
+                    />
+                  )}
+                </Upload>
+              </Form.Item>
+            </Col>
+
             <Col md={12}>
               <div
                 className="d-flex"
@@ -212,29 +296,6 @@ const ModalEditUser = ({ record, getData }) => {
                   <Switch />
                 </Form.Item>
               </div>
-            </Col>
-            <Col md={12}>
-              <Form.Item>
-                <Upload
-                  name="avatar"
-                  listType="picture-circle"
-                  className="avatar-uploader"
-                  beforeUpload={() => false}
-                  previewFile={true}
-                  disabled
-                >
-                  {imageUrl && (
-                    <img
-                      src={imageUrl}
-                      alt="avatar"
-                      style={{
-                        width: "200px",
-                        height: "200px",
-                      }}
-                    />
-                  )}
-                </Upload>
-              </Form.Item>
             </Col>
           </Row>
 
