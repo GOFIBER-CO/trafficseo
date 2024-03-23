@@ -100,3 +100,17 @@ export const deleteInfoPayment = async (req: Request, res: Response) => {
     res.status(500).json({ error: error });
   }
 };
+
+export const getInfoPaymentUserId = async (req: Request, res: Response) => {
+  try {
+    const infoPayment = await InfoPaymentModel.findOne({
+      user: req.params.id,
+    }).exec();
+
+    res
+      .status(200)
+      .json({ status: RESPONSE_STATUS.SUCCESS, data: infoPayment });
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+};
