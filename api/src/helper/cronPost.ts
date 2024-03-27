@@ -10,7 +10,6 @@ const RUN_TIME = {
 };
 const handlePost = async (index: number) => {
   try {
-
     // const startDate = moment()
     //   .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
     //   .toISOString();
@@ -18,10 +17,9 @@ const handlePost = async (index: number) => {
     //   .set({ hour: 23, minute: 59, second: 59, millisecond: 999 })
     //   .toISOString();
 
-
     const posts = await postModel.find({
       repeat: index,
-      status:2
+      status: 2,
     });
 
     posts?.forEach(async (item) => {
@@ -51,7 +49,7 @@ const handlePostOther = async (index: number) => {
   try {
     const posts = await postModel.find({
       repeat: { $gte: index },
-      status:2
+      status: 2,
       // createdAt: { $gte: startDate, $lte: endDate },
     });
     posts?.forEach(async (item) => {
@@ -77,33 +75,62 @@ const handlePostOther = async (index: number) => {
   }
 };
 export const cronPost = (quantity: number) => {
-  moment.locale('vi');
+  // moment.locale('vi');
 
-  //cancel các job cũ
-  const jobNames = Object.keys(cron.scheduledJobs);
+  // //cancel các job cũ
+  // const jobNames = Object.keys(cron.scheduledJobs);
 
-  for (const name of jobNames) cron.cancelJob(name);
+  // for (const name of jobNames) cron.cancelJob(name);
 
-  cron.scheduleJob(`* */1 * * *`, () => {
-    const hourVN = moment().format('HH:mm:ss');
-    Object.keys(RUN_TIME)?.map((item: string, index: number) => {
-      console.log(' co chay nhas');
-      if (parseInt(item) <= quantity) {
-        if (Object.values(RUN_TIME)[index]?.includes(hourVN)) {
-          handlePost(parseInt(item));
-        }
-      } else {
-        if (Object.values(RUN_TIME)[quantity]?.includes(hourVN)) {
-          handlePostOther(parseInt(item));
-        }
-      }
+  // cron.scheduleJob(`* */1 * * *`, () => {
+  //   const hourVN = moment().format('HH:mm:ss');
+  //   Object.keys(RUN_TIME)?.map((item: string, index: number) => {
+  //     console.log(' co chay nhas');
+  //     if (parseInt(item) <= quantity) {
+  //       if (Object.values(RUN_TIME)[index]?.includes(hourVN)) {
+  //         handlePost(parseInt(item));
+  //       }
+  //     } else {
+  //       if (Object.values(RUN_TIME)[quantity]?.includes(hourVN)) {
+  //         handlePostOther(parseInt(item));
+  //       }
+  //     }
+  //   });
+  //   console.log(hourVN);
+  //   console.log(`running a task every 2`);
+  // });
+  return;
+};
+
+export const crontPostByTime = (hour) => {
+  cron.scheduleJob(`0 ${hour} * * *`, async () => {
+    // cron.scheduleJob(`* * * * *`, async () => {
+    const toDay = moment().toISOString();
+    const posts = await postModel.find({
+      startDate: { $lte: toDay },
+      endDate: { $gte: toDay },
+      status: { $in: [6, 2] },
     });
-    console.log(hourVN);
-    console.log(`running a task every 2`);
+    await Promise.all(
+      posts?.map(async (element, index) => {
+        await postModel.updateOne(
+          { _id: element?._id },
+          {
+            quantityRemainByTime:
+              hour == '6'
+                ? element?.postByTime6h
+                : hour == '12'
+                ? element?.postByTime12h + element?.quantityRemainByTime
+                : element?.postByTime18h + element?.quantityRemainByTime,
+          }
+        );
+        console.log('da xong ', index);
+      })
+    );
   });
 };
 
-export const cronPostEveryDay = () => {
+export const initPostEveryDay = () => {
   cron.scheduleJob(`0 3 * * *`, async () => {
     const toDay = moment().toISOString();
     const posts = await postModel.find({
@@ -111,12 +138,12 @@ export const cronPostEveryDay = () => {
       endDate: { $gte: toDay },
       status: { $in: [6, 2] },
     });
-  
-     const postsOff = await postModel.find({
+
+    const postsOff = await postModel.find({
       endDate: { $lt: toDay },
       status: { $in: [6, 2] },
     });
-  
+
     await Promise.all(
       posts?.map(async (element, index) => {
         await postModel.updateOne(
@@ -124,26 +151,31 @@ export const cronPostEveryDay = () => {
           {
             status: 2,
             userCompleted: [],
-            reportExtension:0,
-            reportExtensionUser:[],
+            reportExtension: 0,
+            reportExtensionUser: [],
             quantityAfterReset: 0,
           }
         );
-        console.log("da xong " ,index)
+        console.log('da xong ', index);
       })
     );
-     await Promise.all(
+    await Promise.all(
       postsOff?.map(async (element, index) => {
         await postModel.updateOne(
           { _id: element?._id },
           {
             status: 3,
-        
           }
         );
-        console.log("da xong " ,index)
+        console.log('da xong ', index);
       })
     );
   });
 };
 
+export const cronPostEveryDay = () => {
+  initPostEveryDay();
+  crontPostByTime(6);
+  crontPostByTime(12);
+  crontPostByTime(18);
+};

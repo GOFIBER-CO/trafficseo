@@ -27,10 +27,13 @@ export const authenticate = (req: any, res: Response, next: NextFunction) => {
       if (error) {
         return res.status(401).send({ message: 'Invalid token' });
       }
-      
-       if (!decoded?.exp || !decoded.iat|| decoded?.exp-decoded?.iat!==86400 )
 
-      return res.status(401).send({ message: "Invalid token" });
+      if (
+        !decoded?.exp ||
+        !decoded.iat ||
+        decoded?.exp - decoded?.iat !== 86400
+      )
+        return res.status(401).send({ message: 'Invalid token' });
       const user = await userModel.findOne({
         _id: decoded.id,
         isActivated: true,
@@ -44,18 +47,14 @@ export const authenticate = (req: any, res: Response, next: NextFunction) => {
   );
 };
 
-
 export const checkHost = (req: any, res: Response, next: NextFunction) => {
-  const  origin = req.get('origin');
-  if(!origin?.includes("trafficsseo.com"))
-  {
-      console.log(req?.user)
-      return res.status(401).send({ message: 'No token provided' });
+  const origin = req.get('origin');
+  if (!origin?.includes('trafficsseo.com')) {
+    console.log(req?.user);
+    return res.status(401).send({ message: 'No token provided' });
   }
 
-next()
-
-
+  next();
 };
 
 export const authenticateForSuperAdmin = (

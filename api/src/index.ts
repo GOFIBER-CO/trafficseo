@@ -20,9 +20,8 @@ import useRoutes from './routers';
 import roleModel from './models/role.model';
 import session from 'express-session';
 import { InitTele } from './helper/Bottelegram';
-import {  sendLog } from './helper/Bottelegram';
+import { sendLog } from './helper/Bottelegram';
 import { cronPostEveryDay } from './helper/cronPost';
-
 
 const NAMESPACE = 'SERVER';
 
@@ -33,6 +32,7 @@ const app = express();
 const allowOrigin = [
   'https://trafficsseo.com',
   'https://admin.trafficsseo.com',
+  'http://localhost:3001',
 ];
 
 const corsOption: CorsOptions = {
@@ -80,7 +80,7 @@ const io = new Server(server, {
 //@ts-ignore
 global._io = io;
 socket(io);
-InitTele();
+// InitTele();
 // Create socket
 
 // Add your API routes here
