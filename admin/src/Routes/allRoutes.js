@@ -52,7 +52,7 @@ import VpsList from "../pages/Vps/VpsList";
 import VpsTabList from "../pages/Vps/tab/VpsTabList";
 import HostingList from "../pages/Hosting/HostingList";
 import SeoList from "../pages/Seo/SeoList";
-import LogsManager from "../pages/Logs";
+import LogsManager from "../pages/LogPage";
 import PointLogs from "../pages/PointLogs";
 import MessageManager from "../pages/MessageManager";
 import PostReported from "../pages/Posts/PostReported";
