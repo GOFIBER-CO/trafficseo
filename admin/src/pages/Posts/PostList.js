@@ -79,12 +79,47 @@ function PostList() {
   const [totalMoneyChi, setTotalMoneyChi] = useState(0);
   const [postQuantity, setPostQuantity] = useState();
   const [quantityTotal, setQuantityTotal] = useState();
-  const [quantityEveryDay, setQuantityEveryDay] = useState();
+  const [quantityEveryDay, setQuantityEveryDay] = useState(0);
   const [dateCompleted, setDateCompleted] = useState(new Date(DateCompleted));
   const [user, setUser] = useState({});
   const [userId, setUserId] = useState("");
   const [sort, setSort] = useState("createdAt");
   const [openCreatePost, setOpenCreatePost] = useState(false);
+  const [postByTime6h, setPostByTime6h] = useState(0);
+  const [postByTime12h, setPostByTime12h] = useState(0);
+  const [postByTime18h, setPostByTime18h] = useState(0);
+
+  const updatePostByTime = (value, key) => {
+    let newValue = Number(value);
+    if (value < 0) {
+      newValue = 0;
+    }
+
+    if (key === "6h") {
+      if (postByTime18h + postByTime12h + newValue > quantityEveryDay) {
+        newValue = quantityEveryDay - (postByTime18h + postByTime12h);
+      }
+      setPostByTime6h(newValue);
+      return;
+    }
+
+    if (key === "12h") {
+      if (postByTime18h + postByTime6h + newValue > quantityEveryDay) {
+        newValue = quantityEveryDay - (postByTime18h + postByTime6h);
+      }
+      setPostByTime12h(newValue);
+      return;
+    }
+
+    if (key === "18h") {
+      if (postByTime6h + postByTime12h + newValue > quantityEveryDay) {
+        newValue = quantityEveryDay - (postByTime6h + postByTime12h);
+      }
+      setPostByTime18h(newValue);
+      return;
+    }
+  };
+
   const toggle = useCallback(
     () => setOpenCreatePost(!openCreatePost),
     [openCreatePost]
@@ -328,6 +363,9 @@ function PostList() {
       team: teamCreated,
       quantityTotal,
       quantityEveryDay,
+      postByTime6h,
+      postByTime12h,
+      postByTime18h,
     });
     setPosts([newPost, ...posts]);
     toggle();
@@ -830,6 +868,42 @@ function PostList() {
                     placeholder={`Số lượng tổng`}
                     value={quantityTotal}
                     onChange={(e) => setQuantityTotal(e.target.value)}
+                    type="number"
+                  />
+                </div>
+                <div className="grid mt-2">
+                  <label>
+                    Số lượng bài viết (6h) (Phải nhỏ hơn tổng mỗi ngày và tổng 3
+                    khung giờ không vượt quá tổng mỗi ngày)
+                  </label>
+                  <Input
+                    placeholder={`Số lượng bài viết theo giờ (6h)`}
+                    value={postByTime6h}
+                    onChange={(e) => updatePostByTime(e.target.value, "6h")}
+                    type="number"
+                  />
+                </div>
+                <div className="grid mt-2">
+                  <label>
+                    Số lượng bài viết (12h) (Phải nhỏ hơn tổng mỗi ngày và tổng
+                    3 khung giờ không vượt quá tổng mỗi ngày)
+                  </label>
+                  <Input
+                    placeholder={`Số lượng bài viết theo giờ (12h)`}
+                    value={postByTime12h}
+                    onChange={(e) => updatePostByTime(e.target.value, "12h")}
+                    type="number"
+                  />
+                </div>
+                <div className="grid mt-2">
+                  <label>
+                    Số lượng bài viết (18h) (Phải nhỏ hơn tổng mỗi ngày và tổng
+                    3 khung giờ không vượt quá tổng mỗi ngày)
+                  </label>
+                  <Input
+                    placeholder={`Số lượng bài viết theo giờ (18h)`}
+                    value={postByTime18h}
+                    onChange={(e) => updatePostByTime(e.target.value, "18h")}
                     type="number"
                   />
                 </div>
