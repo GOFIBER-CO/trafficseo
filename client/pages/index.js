@@ -46,15 +46,15 @@ export default function Home() {
     const rs = await getPostHome();
     setDataPost(rs?.data);
   };
-  useEffect(() => {
-    if (data && user) {
-      const formData = new FormData();
-      formData.append("visitorId", data?.visitorId);
-      formData.append("ip", data.ip);
-      updateFingerPrint(formData);
-      // getData({ ignoreCache: true });
-    }
-  }, [data]);
+  // useEffect(() => {
+  //   if (data && user) {
+  //     const formData = new FormData();
+  //     formData.append("visitorId", data?.visitorId);
+  //     formData.append("ip", data.ip);
+  //     updateFingerPrint(formData);
+  //     // getData({ ignoreCache: true });
+  //   }
+  // }, [data]);
   const getDataNotification = async () => {
     const rs = await getNotificationHome();
     setNotificationHome(rs?.data);
@@ -82,42 +82,42 @@ export default function Home() {
 
   const toggleNotificationReferral = () =>
     setModalNotificationReferral(!modalNotificationReferral);
-  useEffect(() => {
-    getDataPostHome();
-    getDataNotification();
-    let interval = null;
-    let intervalUrl = null;
-    let intervalWeb = null;
-    let intervalMember = null;
-    let intervalKeyword = null;
-    const timer = setTimeout(() => {
-      interval = setInterval(() => {
-        setCountView((data) => data + Math.round(1 + Math.random() * 7));
-      }, 300);
+  // useEffect(() => {
+  //   getDataPostHome();
+  //   getDataNotification();
+  //   let interval = null;
+  //   let intervalUrl = null;
+  //   let intervalWeb = null;
+  //   let intervalMember = null;
+  //   let intervalKeyword = null;
+  //   const timer = setTimeout(() => {
+  //     interval = setInterval(() => {
+  //       setCountView((data) => data + Math.round(1 + Math.random() * 7));
+  //     }, 300);
 
-      intervalUrl = setInterval(() => {
-        setCountUrl((data) => data + Math.round(1 + Math.random() * 4));
-      }, 1000);
-      intervalWeb = setInterval(() => {
-        setCountWeb((data) => data + Math.round(1 + Math.random() * 3));
-      }, 1500);
-      intervalMember = setInterval(() => {
-        setCountMember((data) => data + Math.round(1 + Math.random() * 3));
-      }, 5000);
-      intervalKeyword = setInterval(() => {
-        setCountKeyword((data) => data + Math.round(1 + Math.random() * 6));
-      }, 500);
-    }, 3200);
-    getLoggedinUser();
-    return () => {
-      clearInterval(intervalUrl);
-      clearInterval(intervalWeb);
-      clearInterval(intervalMember);
-      clearInterval(intervalKeyword);
-      clearInterval(interval);
-      clearTimeout(timer);
-    };
-  }, []);
+  //     intervalUrl = setInterval(() => {
+  //       setCountUrl((data) => data + Math.round(1 + Math.random() * 4));
+  //     }, 1000);
+  //     intervalWeb = setInterval(() => {
+  //       setCountWeb((data) => data + Math.round(1 + Math.random() * 3));
+  //     }, 1500);
+  //     intervalMember = setInterval(() => {
+  //       setCountMember((data) => data + Math.round(1 + Math.random() * 3));
+  //     }, 5000);
+  //     intervalKeyword = setInterval(() => {
+  //       setCountKeyword((data) => data + Math.round(1 + Math.random() * 6));
+  //     }, 500);
+  //   }, 3200);
+  //   getLoggedinUser();
+  //   return () => {
+  //     clearInterval(intervalUrl);
+  //     clearInterval(intervalWeb);
+  //     clearInterval(intervalMember);
+  //     clearInterval(intervalKeyword);
+  //     clearInterval(interval);
+  //     clearTimeout(timer);
+  //   };
+  // }, []);
   return (
     <>
       {user ? (

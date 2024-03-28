@@ -18,10 +18,10 @@ export const getInstance = () => {
     (err) => {
       if (err?.response?.status === 401) {
         if (typeof window !== "undefined") {
-          localStorage.removeItem("accessToken");
-          localStorage.removeItem("authUser");
-          window.history.pushState({}, "", "/");
-          window.location.reload();
+          // localStorage.removeItem("accessToken");
+          // localStorage.removeItem("authUser");
+          // window.history.pushState({}, "", "/");
+          // window.location.reload();
         }
       }
     }

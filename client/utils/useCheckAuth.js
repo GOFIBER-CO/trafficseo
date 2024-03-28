@@ -7,19 +7,19 @@ export const useCheckAuth = () => {
 
   const { user, loading } = useContext(AuthContext);
 
-  useEffect(() => {
-    if (!loading) {
-      if (user && router.route === "/login") {
-        router.replace("/");
-      } else if (
-        !user &&
-        router.route !== "/login" &&
-        router.route !== "/register"
-      ) {
-        // router.replace("/login");
-      }
-    }
-  }, [router, user, loading]);
+  // useEffect(() => {
+  //   if (!loading) {
+  //     if (user && router.route === "/login") {
+  //       router.replace("/");
+  //     } else if (
+  //       !user &&
+  //       router.route !== "/login" &&
+  //       router.route !== "/register"
+  //     ) {
+  //       // router.replace("/login");
+  //     }
+  //   }
+  // }, [router, user, loading]);
 
   return { user, loading };
 };
