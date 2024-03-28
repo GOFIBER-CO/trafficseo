@@ -248,7 +248,7 @@ export default function Home() {
       ) : (
         <div id="layout-main">
           <HeaderNonLogin />
-          <div id={"body-main"}>
+          <div className={"body-main"}>
             <div className="full_screen">
               <div id="stars"></div>
               <div id="stars2"></div>

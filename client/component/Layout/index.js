@@ -5,7 +5,9 @@ export default function Layout({ children }) {
   return (
     <div id="layout-main">
       <Header />
-      <div id={styles["body-main"]}>{children}</div>
+      <div className={`${styles['body-main']}`}>
+        {children}
+      </div>
     </div>
   );
 }

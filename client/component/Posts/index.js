@@ -95,26 +95,26 @@ const Posts = () => {
       console.log(error);
     }
   };
-  useEffect(() => {
-    socket?.on("createPost", (data) => {
-      getPost();
-    });
+  // useEffect(() => {
+  //   socket?.on("createPost", (data) => {
+  //     getPost();
+  //   });
 
-    return () => socket?.removeAllListeners();
-  }, [socket]);
-  useEffect(() => {
-    getPost();
-    getMaxRepeatPost();
-    getBrand();
-  }, []);
+  //   return () => socket?.removeAllListeners();
+  // }, [socket]);
+  // useEffect(() => {
+  //   getPost();
+  //   getMaxRepeatPost();
+  //   getBrand();
+  // }, []);
 
-  useEffect(() => {
-    const timmerId = window.setInterval(() => {
-      getPost();
-    }, 30000);
+  // useEffect(() => {
+  //   const timmerId = window.setInterval(() => {
+  //     getPost();
+  //   }, 30000);
 
-    return () => window.clearInterval(timmerId);
-  }, []);
+  //   return () => window.clearInterval(timmerId);
+  // }, []);
 
   const handleDelete = async (id) => {
     try {
