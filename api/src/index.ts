@@ -20,9 +20,8 @@ import useRoutes from './routers';
 import roleModel from './models/role.model';
 import session from 'express-session';
 import { InitTele } from './helper/Bottelegram';
-import {  sendLog } from './helper/Bottelegram';
+import { sendLog } from './helper/Bottelegram';
 import { cronPostEveryDay } from './helper/cronPost';
-
 
 const NAMESPACE = 'SERVER';
 

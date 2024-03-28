@@ -1,4 +1,3 @@
-
 //@ts-nocheck
 import { NextFunction, Request, Response } from 'express';
 import postModel from '../models/post.model';
@@ -71,6 +70,9 @@ class PostController {
         team,
         quantityTotal,
         quantityEveryDay,
+        postByTime6h,
+        postByTime12h,
+        postByTime18h,
       } = req.body;
       const user: any = await userModel
         .findById(req?.user?._id)
@@ -106,7 +108,7 @@ class PostController {
         .select('stt')
         .limit(1);
       let totalDay = parseInt(quantityTotal) / parseInt(quantityEveryDay);
-      totalDay = Math.round(totalDay)-1;
+      totalDay = Math.round(totalDay) - 1;
       const endDate = addDays(totalDay);
 
       const startDate = new Date();
@@ -127,6 +129,9 @@ class PostController {
         quantityTotalRemain: quantityTotal,
         quantityTotal,
         quantityEveryDay,
+        postByTime6h,
+        postByTime12h,
+        postByTime18h,
       });
       await post.populate('userId');
       const response = {
@@ -174,7 +179,7 @@ class PostController {
           message: 'Số lượng tổng phải chia hết cho số lượng mỗi ngày!',
         });
       }
-
+      console.log(req.body);
       const UpdatePost = await postModel.findByIdAndUpdate(postId, req.body);
       const response = {
         message: 'Sửa bài viết thành công',
@@ -402,6 +407,9 @@ class PostController {
           _id: { $nin: postIdBlock },
           userCompleted: { $ne: req.user?._id },
           status: 2,
+          quantityRemainByTime: {
+            $gt: 0,
+          },
         })
         .find(searchObj)
         .skip(skip)
@@ -414,6 +422,9 @@ class PostController {
           _id: { $nin: postIdBlock },
           userCompleted: { $ne: req.user?._id },
           status: 2,
+          quantityRemainByTime: {
+            $gt: 0,
+          },
         })
         .find(searchObj)
         .countDocuments();
@@ -603,7 +614,10 @@ class PostController {
       if (!checkPost) {
         return res.json({ status: -1, message: 'Không có bài viết' });
       }
-      if (checkPost?.running?.length >= Math.round(parseInt(checkPost?.quantityEveryDay)/5)) {
+      if (
+        checkPost?.running?.length >=
+        Math.round(parseInt(checkPost?.quantityEveryDay) / 5)
+      ) {
         return res.json({ status: -1, message: 'Đủ số lượng người đang chạy' });
       }
       const post = await postModel.updateOne(
@@ -720,7 +734,8 @@ class PostController {
               quantityEveryDay: 1,
               quantityCurrent: 1,
               quantityTotal: 1,
-              startDate: 1,endDate: 1,
+              startDate: 1,
+              endDate: 1,
               createdAt: 1,
               team: 1,
               stt: 1,
@@ -731,6 +746,9 @@ class PostController {
               note: 1,
               quantityAfterReset: 1,
               sizeUserCompleted: { $size: '$userCompleted' },
+              postByTime6h: 1,
+              postByTime12h: 1,
+              postByTime18h: 1,
             },
           },
           {
@@ -889,7 +907,8 @@ class PostController {
               quantityEveryDay: 1,
               quantityCurrent: 1,
               quantityTotal: 1,
-              startDate: 1,endDate: 1,
+              startDate: 1,
+              endDate: 1,
               createdAt: 1,
               team: 1,
               stt: 1,
@@ -1082,7 +1101,7 @@ class PostController {
       next(err);
     }
   }
- async acceptPost(req: AuthRequest, res: Response, next: NextFunction) {
+  async acceptPost(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
       const role = await roleModel.findById(req.user?.roleOfUser);
@@ -1097,7 +1116,7 @@ class PostController {
 
         let totalDay =
           parseInt(post.quantityTotal) / parseInt(post.quantityEveryDay);
-        totalDay = Math.round(totalDay)-1;
+        totalDay = Math.round(totalDay) - 1;
         const endDate = addDays(totalDay);
         post.startDate = startDate;
         post.endDate = endDate;
@@ -1124,12 +1143,12 @@ class PostController {
         return res.json({ status: 1, message: 'Duyệt bài viết thành công!' });
       }
       if (role?.name === 'troly') {
-            const startDate = new Date();
+        const startDate = new Date();
         startDate.setHours(0, 0, 0, 0);
 
         let totalDay =
           parseInt(post.quantityTotal) / parseInt(post.quantityEveryDay);
-        totalDay = Math.round(totalDay)-1;
+        totalDay = Math.round(totalDay) - 1;
         const endDate = addDays(totalDay);
         post.startDate = startDate;
         post.endDate = endDate;
@@ -1364,12 +1383,24 @@ class PostController {
     // const session = await mongoose.startSession();
     // session.startTransaction();
     try {
-        const ipBlack=[]
-        const blackEmail=["hoangluunghiayx97@gmail.com","hoangquangdanel87@gmail.com","nguyenthiensangah58@gmail.com","nguyenhoanvietth28@gmail.com","dangquangtuongae66@gmail.com","keoliet@gmail.com","k7860030@gmail.com","yonglee02121@gmail.com"]
-        const ipUser=req.headers['x-forwarded-for']
-        const firstIp=ipUser?.split(",")
-        if(ipBlack?.includes(firstIp?.[0]?.trim())||blackEmail?.includes(req.user?.email))
-         return res.json({
+      const ipBlack = [];
+      const blackEmail = [
+        'hoangluunghiayx97@gmail.com',
+        'hoangquangdanel87@gmail.com',
+        'nguyenthiensangah58@gmail.com',
+        'nguyenhoanvietth28@gmail.com',
+        'dangquangtuongae66@gmail.com',
+        'keoliet@gmail.com',
+        'k7860030@gmail.com',
+        'yonglee02121@gmail.com',
+      ];
+      const ipUser = req.headers['x-forwarded-for'];
+      const firstIp = ipUser?.split(',');
+      if (
+        ipBlack?.includes(firstIp?.[0]?.trim()) ||
+        blackEmail?.includes(req.user?.email)
+      )
+        return res.json({
           status: RESPONSE_STATUS.FAILED,
           message: 'Trình duyệt không hợp lệ',
         });
@@ -1398,7 +1429,10 @@ class PostController {
         });
       }
       const { postId } = req.body;
-      const checkRunning = await postModel.findOne({ running: req.user?._id,_id:postId });
+      const checkRunning = await postModel.findOne({
+        running: req.user?._id,
+        _id: postId,
+      });
       if (!checkRunning)
         return res.json({
           status: RESPONSE_STATUS.FAILED,
@@ -1456,24 +1490,24 @@ class PostController {
             );
           }
 
-        //   const author = await userModel
-        //     .findOneAndUpdate(
-        //       { _id: updateUserCompleted.userId._id },
-        //       { $inc: { point: -500 } },
-        //       {
-        //         new: true,
-        //       }
-        //     )
-        //     .populate('roleOfUser');
+          //   const author = await userModel
+          //     .findOneAndUpdate(
+          //       { _id: updateUserCompleted.userId._id },
+          //       { $inc: { point: -500 } },
+          //       {
+          //         new: true,
+          //       }
+          //     )
+          //     .populate('roleOfUser');
 
-        //   await pointLogModel.create({
-        //     user: author?._id,
-        //     post: updateUserCompleted,
-        //     userAgent: req.headers['user-agent'],
-        //     origin: req.get('Origin'),
-        //     point: -500,
-        //     ip: req.headers['x-forwarded-for'] || '::1',
-        //   });
+          //   await pointLogModel.create({
+          //     user: author?._id,
+          //     post: updateUserCompleted,
+          //     userAgent: req.headers['user-agent'],
+          //     origin: req.get('Origin'),
+          //     point: -500,
+          //     ip: req.headers['x-forwarded-for'] || '::1',
+          //   });
 
           await userModel.findOneAndUpdate(
             { _id: req.user?._id },
@@ -1522,7 +1556,7 @@ class PostController {
             { _id: postId },
             {
               quantityCurrent: quantityObject,
-              $inc: { quantityTotalRemain: -1 },
+              $inc: { quantityTotalRemain: -1, quantityRemainByTime: -1 },
             }
           );
           sendLog(
@@ -1668,7 +1702,8 @@ class PostController {
               quantityEveryDay: 1,
               quantityCurrent: 1,
               quantityTotal: 1,
-              startDate: 1,endDate: 1,
+              startDate: 1,
+              endDate: 1,
               createdAt: 1,
               team: 1,
               stt: 1,
@@ -1841,7 +1876,8 @@ class PostController {
               quantityEveryDay: 1,
               quantityCurrent: 1,
               quantityTotal: 1,
-              startDate: 1,endDate: 1,
+              startDate: 1,
+              endDate: 1,
               createdAt: 1,
               team: 1,
               stt: 1,
@@ -1990,7 +2026,8 @@ class PostController {
               quantityEveryDay: 1,
               quantityCurrent: 1,
               quantityTotal: 1,
-              startDate: 1,endDate: 1,
+              startDate: 1,
+              endDate: 1,
               createdAt: 1,
               team: 1,
               stt: 1,
@@ -2059,7 +2096,7 @@ class PostController {
       next(err);
     }
   }
-async turnOffAllPost(req: AuthRequest, res: Response, next: NextFunction) {
+  async turnOffAllPost(req: AuthRequest, res: Response, next: NextFunction) {
     // const session = await mongoose.startSession();
     // session.startTransaction();
     try {
@@ -2088,8 +2125,11 @@ async turnOffAllPost(req: AuthRequest, res: Response, next: NextFunction) {
         });
       }
       const { postId } = req.body;
-      const checkRunning = await postModel.findOne({ running: req.user?._id,_id:postId });
-    
+      const checkRunning = await postModel.findOne({
+        running: req.user?._id,
+        _id: postId,
+      });
+
       const pullId = await postModel.updateOne(
         { _id: postId },
         {
@@ -2208,7 +2248,7 @@ async turnOffAllPost(req: AuthRequest, res: Response, next: NextFunction) {
             { _id: postId },
             {
               quantityCurrent: quantityObject,
-              $inc: { quantityTotalRemain: -1 },
+              $inc: { quantityTotalRemain: -1, quantityRemainByTime: -1 },
             }
           );
           sendLog(
@@ -2332,7 +2372,8 @@ async turnOffAllPost(req: AuthRequest, res: Response, next: NextFunction) {
               quantityEveryDay: 1,
               quantityCurrent: 1,
               quantityTotal: 1,
-              startDate: 1,endDate: 1,
+              startDate: 1,
+              endDate: 1,
               createdAt: 1,
               team: 1,
               stt: 1,
@@ -2455,4 +2496,3 @@ async turnOffAllPost(req: AuthRequest, res: Response, next: NextFunction) {
   }
 }
 export default new PostController();
-

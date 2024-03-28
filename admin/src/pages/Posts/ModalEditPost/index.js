@@ -83,6 +83,45 @@ export default function ModalEditPost({
   const [repeat, setRepeat] = useState(1);
   const [maxRepeatPost, setMaxRepeatPost] = useState(1);
   const [optionsRepeat, setOptionsRepeat] = useState([]);
+  const [postByTime6h, setPostByTime6h] = useState(0);
+  const [postByTime12h, setPostByTime12h] = useState(0);
+  const [postByTime18h, setPostByTime18h] = useState(0);
+
+  const updatePostByTime = (value, key) => {
+    let newValue = Number(value);
+    if (value < 0) {
+      newValue = 0;
+    }
+
+    if (key === "6h") {
+      if (postByTime18h + postByTime12h + newValue > quantityEveryDay) {
+        newValue = quantityEveryDay - (postByTime18h + postByTime12h);
+      }
+      setPostByTime6h(newValue);
+      return;
+    }
+
+    if (key === "12h") {
+      console.log(postByTime18h + postByTime6h + newValue);
+
+      if (postByTime18h + postByTime6h + newValue > quantityEveryDay) {
+        newValue = quantityEveryDay - (postByTime18h + postByTime6h);
+        console.log(quantityEveryDay - (postByTime18h + postByTime6h));
+        console.log(newValue);
+      }
+      setPostByTime12h(newValue);
+      return;
+    }
+
+    if (key === "18h") {
+      if (postByTime6h + postByTime12h + newValue > quantityEveryDay) {
+        newValue = quantityEveryDay - (postByTime6h + postByTime12h);
+      }
+      setPostByTime18h(newValue);
+      return;
+    }
+  };
+
   const getMaxRepeatPost = async () => {
     const dataRepeat = await getQuantityResetPost();
 
@@ -105,6 +144,9 @@ export default function ModalEditPost({
       setRepeat(record?.repeat);
       setQuantityTotal(record?.quantityTotal);
       setDateCompleted(new Date(record?.dateCompleted));
+      setPostByTime6h(record?.postByTime6h || 0);
+      setPostByTime12h(record?.postByTime12h || 0);
+      setPostByTime18h(record?.postByTime18h || 0);
     }
     getMaxRepeatPost();
   }, [record, openCreatePost]);
@@ -132,6 +174,9 @@ export default function ModalEditPost({
         team: team,
         repeat: repeat,
         dateCompleted: dateCompleted,
+        postByTime6h,
+        postByTime12h,
+        postByTime18h,
       });
       toggle();
       getData();
@@ -260,7 +305,7 @@ Nhập 3 link dạng: keywords###domain.com`}
                 </div>
               </>
             )}
-         {/* <div className="d-grid">
+          {/* <div className="d-grid">
             <label>Dự kiến hoàn thành</label>
             <ReactDatePicker
               selected={dateCompleted}
@@ -270,6 +315,42 @@ Nhập 3 link dạng: keywords###domain.com`}
               onChange={(value) => setDateCompleted(value)}
             />
           </div> */}
+          <div className="grid mt-2">
+            <label>
+              Số lượng bài viết (6h) (Phải nhỏ hơn tổng mỗi ngày và tổng 3 khung
+              giờ không vượt quá tổng mỗi ngày)
+            </label>
+            <Input
+              placeholder={`Số lượng bài viết theo giờ (6h)`}
+              value={postByTime6h}
+              onChange={(e) => updatePostByTime(e.target.value, "6h")}
+              type="number"
+            />
+          </div>
+          <div className="grid mt-2">
+            <label>
+              Số lượng bài viết (12h) (Phải nhỏ hơn tổng mỗi ngày và tổng 3
+              khung giờ không vượt quá tổng mỗi ngày)
+            </label>
+            <Input
+              placeholder={`Số lượng bài viết theo giờ (6h)`}
+              value={postByTime12h}
+              onChange={(e) => updatePostByTime(e.target.value, "12h")}
+              type="number"
+            />
+          </div>
+          <div className="grid mt-2">
+            <label>
+              Số lượng bài viết (18h) (Phải nhỏ hơn tổng mỗi ngày và tổng 3
+              khung giờ không vượt quá tổng mỗi ngày)
+            </label>
+            <Input
+              placeholder={`Số lượng bài viết theo giờ (6h)`}
+              value={postByTime18h}
+              onChange={(e) => updatePostByTime(e.target.value, "18h")}
+              type="number"
+            />
+          </div>
           <div className="d-grid mt-2">
             <label>Số lượng hoàn thành</label>
             {Object.keys(record?.quantityCurrent || {})?.length > 0 ? (
@@ -301,10 +382,8 @@ Nhập 3 link dạng: keywords###domain.com`}
             className="w-100"
             onClick={handleSubmit}
             disabled={
-              (
-                user?.user?.roleOfUser?.name === "leader" &&
-                (record?.status === 0 || record?.status === 1)
-              )===true
+              (user?.user?.roleOfUser?.name === "leader" &&
+                (record?.status === 0 || record?.status === 1)) === true
             }
           >
             Cập nhật

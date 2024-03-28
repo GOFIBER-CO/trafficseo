@@ -29,6 +29,22 @@ const PostSchema: Schema = new Schema(
     quantityTotal: { type: Number, default: 50, min: 0 },
     quantityTotalRemain: { type: Number },
     quantityCurrent: { type: Object },
+    quantityRemainByTime: {
+      type: Number,
+      default: 0,
+    },
+    postByTime6h: {
+      type: Number,
+      default: 0,
+    },
+    postByTime12h: {
+      type: Number,
+      default: 0,
+    },
+    postByTime18h: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
