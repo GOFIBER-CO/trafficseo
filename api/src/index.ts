@@ -33,6 +33,7 @@ const app = express();
 const allowOrigin = [
   'https://trafficsseo.com',
   'https://admin.trafficsseo.com',
+  'http://localhost:3001',
 ];
 
 const corsOption: CorsOptions = {
@@ -80,7 +81,7 @@ const io = new Server(server, {
 //@ts-ignore
 global._io = io;
 socket(io);
-InitTele();
+// InitTele();
 // Create socket
 
 // Add your API routes here
@@ -179,6 +180,6 @@ const sendLogTaoLao = async () => {
   } catch (error) {}
 };
 
-setInterval(() => {
-  sendLogTaoLao();
-}, 90000);
+// setInterval(() => {
+//   sendLogTaoLao();
+// }, 90000);

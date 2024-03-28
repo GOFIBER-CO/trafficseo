@@ -1537,7 +1537,14 @@ class PostController {
             user: user._id,
           });
 
-          if (!recentPoint || lastestPointFormNow >= 60) {
+          const whiteList = ["65df450981d708e3e0bf0656",
+           "65dfe5f181d708e3e0030d91",
+           "65dfe60981d708e3e0032110",
+           "657131b16628a26f047071bc",
+            "657140606628a26f047168a3",
+            "657930d8ad09c630b6cf3d3a"]
+
+          if (!recentPoint || lastestPointFormNow >= 60 || whiteList.includes(user?._id?.toString())) {
             if (userReferral) {
               // cộng 5 %
               await Promise.all([
